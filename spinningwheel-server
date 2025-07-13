@@ -1,0 +1,73 @@
+local wheelSpin_event = game.ReplicatedStorage.Events.WheelSpin
+local wheelSpinApproved_event = game.ReplicatedStorage.Events.WheelSpinApproved
+
+
+wheelSpin_event.OnServerEvent:Connect(function(plr)
+	local spinDB = plr.SpinDB
+	if spinDB.Value then return end
+	spinDB.Value = true
+	
+	local plrSpins = plr.SpinningWheel.Spins
+	local plrCoins = plr.leaderstats.Coins
+	local hasSigmaFace = plr.HasColors.HasSigmaFace
+	local hasTrollFace = plr.HasColors.HasTrollFace
+	local spinnerTitle = plr.ChatTags.HasSpinnerTag
+	
+	plrSpins.Value -= 1
+	
+	if plrSpins.Value <= 0 then return end 
+	
+	local random = math.random(1,100)
+	
+	if random == 1 then
+		wheelSpinApproved_event:FireClient(plr, "Nothing")
+		print("nothing")
+	
+	elseif random == 2 then        -- sigma face 1%
+		if not hasSigmaFace.Value then
+			hasSigmaFace.Value = true
+		else
+			plrCoins.Value += 50
+		end
+		
+		print("sigma face")
+		wheelSpinApproved_event:FireClient(plr, "SigmaFace")
+	elseif random <= 7 then --title 5%
+		spinnerTitle.Value = true
+		
+		
+		wheelSpinApproved_event:FireClient(plr, "Title")
+		print("title")
+		
+	elseif random <= 13 then
+		plrCoins.Value += 100
+		wheelSpinApproved_event:FireClient(plr, "100Coins1")
+		print("100 coins")
+		
+	elseif random <= 20 then
+		plrCoins.Value += 100
+		wheelSpinApproved_event:FireClient(plr, "100Coins2")
+		print("100 coins")
+		
+	elseif random <= 40 then -- troll skin 20%
+		if not hasTrollFace.Value then
+			hasTrollFace.Value = true
+		else
+			plrCoins.Value += 20
+		end
+	
+		wheelSpinApproved_event:FireClient(plr, "TrollFace")
+		print("troll face")
+	elseif random <= 70 then
+		plrCoins.Value += 10
+		wheelSpinApproved_event:FireClient(plr, "10Coins1")
+		print("10 coins")
+	elseif random <= 100 then
+		plrCoins.Value += 10
+		wheelSpinApproved_event:FireClient(plr, "10Coins2")
+		print("10 coins")
+	end
+	
+	task.wait(4)
+	spinDB.Value = false
+end)
