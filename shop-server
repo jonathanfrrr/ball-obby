@@ -1,0 +1,13 @@
+local purchase_event = game.ReplicatedStorage.Events.Purchase
+local price_module = require(script.PriceModule)
+
+purchase_event.OnServerEvent:Connect(function(plr, item)
+	local price = price_module[item.Name]
+	local plrCoins = plr.leaderstats.Coins
+	local hasItem = item:FindFirstChildOfClass("StringValue")
+	local plrHasItem = plr.HasColors[hasItem.Name]
+	
+	if plrCoins.Value < price or plrHasItem.Value then return end
+	plrCoins.Value -= price
+	plrHasItem.Value = true
+end)
