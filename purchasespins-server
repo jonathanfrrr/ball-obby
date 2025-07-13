@@ -1,0 +1,34 @@
+local buySpin_event = game.ReplicatedStorage.Events.BuySpin
+local mps = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
+
+local oneSpin_id = 3324236767
+local fiveSpins_id = 3324236957
+
+buySpin_event.OnServerEvent:Connect(function(plr, amount)
+	local userId = plr.UserId
+	if amount == "1Spin" then
+		mps:PromptProductPurchase(plr, oneSpin_id)
+		
+	elseif amount == "5Spins" then
+		mps:PromptProductPurchase(plr, fiveSpins_id)
+	
+	end
+end)
+
+
+mps.PromptProductPurchaseFinished:Connect(function(userId, productID, wasPurchased)
+	local plr = Players:GetPlayerByUserId(userId)
+	local plrSpins = plr.SpinningWheel.Spins
+	
+	if wasPurchased then
+		if productID == oneSpin_id then
+			plrSpins.Value += 1
+			print(plrSpins.Value)
+		
+		elseif productID == fiveSpins_id then
+			plrSpins.Value += 5
+			print(plrSpins.Value)
+		end
+	end
+end)
