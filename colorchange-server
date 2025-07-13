@@ -1,0 +1,20 @@
+local colorChange_event = game.ReplicatedStorage.Events.ColorChange
+local ballAccesories_folder = game.ReplicatedStorage.BallAccesories
+local catAccesories_folder = ballAccesories_folder.Cat
+
+colorChange_event.OnServerEvent:Connect(function(plr, colorVAL, decalVAL)
+	local char = plr.Character
+	local ball = char.HumanoidRootPart:FindFirstChild("BouleMagique")
+	local rope = ball.Rope
+	local faceDecal = ball:WaitForChild("FaceDecal")
+	
+	if decalVAL == "rbxassetid://6274377111" then -- cat ball (admin)
+		ball.Color = colorVAL
+		faceDecal.Texture = decalVAL
+		rope.Color = BrickColor.new(colorVAL)
+	else
+		ball.Color = colorVAL
+		faceDecal.Texture = decalVAL
+		rope.Color = BrickColor.new(colorVAL)
+	end
+end)
