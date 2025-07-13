@@ -1,0 +1,16 @@
+local buySpin_event = game.ReplicatedStorage:WaitForChild("Events"):WaitForChild("BuySpin")
+
+local plr = game.Players.LocalPlayer
+local plrGui = plr:WaitForChild("PlayerGui")
+local button_folder = plrGui:WaitForChild("ScreenGui"):WaitForChild("SpinningWheel"):WaitForChild("Background"):WaitForChild("Buttons"):WaitForChild("Buttons")
+
+local buy1Spin = button_folder:WaitForChild("Buy1Spin")
+local buy5Spins = button_folder:WaitForChild("Buy5Spins")
+
+buy1Spin.MouseButton1Up:Connect(function()
+	buySpin_event:FireServer("1Spin")
+end)
+
+buy5Spins.MouseButton1Up:Connect(function()
+	buySpin_event:FireServer("5Spins")
+end)
