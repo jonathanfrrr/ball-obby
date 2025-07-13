@@ -1,0 +1,62 @@
+local plr = game.Players.LocalPlayer
+local plrSpins = plr:WaitForChild("SpinningWheel"):WaitForChild("Spins")
+local plrGui = plr:WaitForChild("PlayerGui")
+local wheelSpin_event = game.ReplicatedStorage:WaitForChild("Events"):WaitForChild("WheelSpin")
+local wheelSpinApproved_event = game.ReplicatedStorage:WaitForChild("Events"):WaitForChild("WheelSpinApproved")
+local ts = game:GetService("TweenService")
+
+local background = plrGui:WaitForChild("ScreenGui"):WaitForChild("SpinningWheel"):WaitForChild("Background")
+local wheel = background:WaitForChild("Wheel")
+local button_folder = background:WaitForChild("Buttons"):WaitForChild("Buttons")
+local spinButton = button_folder:WaitForChild("SpinButton")
+local buy1SpinButton = button_folder:WaitForChild("Buy1Spin")
+local buy5SpinsButton = button_folder:WaitForChild("Buy5Spins")
+
+spinButton.MouseButton1Up:Connect(function()
+	if plrSpins.Value <= 0 then return end
+	
+	wheelSpin_event:FireServer()
+end)
+
+
+local extraRotation
+local rotations = 6
+local spinTime = 3 
+local finalRotation
+local wheelRotation = 0
+
+local ti = TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+
+wheelSpinApproved_event.OnClientEvent:Connect(function(win)
+	
+	wheel.Rotation = 0
+	
+	if win == "Nothing" then
+		extraRotation = 26
+		finalRotation = rotations * 360 + extraRotation
+	elseif win == "SigmaFace" then
+		extraRotation = -20
+		finalRotation = rotations * 360 + extraRotation
+	elseif win == "TrollFace" then
+		extraRotation = -151
+		finalRotation = rotations * 360 + extraRotation
+	elseif win == "Title" then
+		extraRotation = 117
+		finalRotation = rotations * 360 + extraRotation
+	elseif win == "100Coins1" then
+		extraRotation = 66
+		finalRotation = rotations * 360 + extraRotation
+	elseif win == "100Coins2" then
+		extraRotation = 157
+		finalRotation = rotations * 360 + extraRotation
+	elseif win == "10Coins1" then
+		extraRotation = -66
+		finalRotation = rotations * 360 + extraRotation
+	elseif win == "10Coins2" then
+		extraRotation = -111
+		finalRotation = rotations * 360 + extraRotation
+	end
+	
+	local tween = ts:Create(wheel, ti, {Rotation = finalRotation})
+	tween:Play()
+end)
