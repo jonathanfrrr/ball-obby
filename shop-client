@@ -1,0 +1,16 @@
+local plr = game.Players.LocalPlayer
+local plrGui = plr:WaitForChild("PlayerGui")
+local purchase_event = game.ReplicatedStorage:WaitForChild("Events"):WaitForChild("Purchase")
+local purchaseGamepass_event = game.ReplicatedStorage:WaitForChild("Events"):WaitForChild("PurchaseGamepass")
+
+local item_folder = plrGui:WaitForChild("ScreenGui"):WaitForChild("Shop"):WaitForChild("Frame"):WaitForChild("ItemHolder"):WaitForChild("ScrollingFrame"):WaitForChild("Items")
+
+for _, item in pairs(item_folder:GetChildren()) do
+	if item:IsA("ImageLabel") then
+		local purchase_button = item:WaitForChild("Buy")
+		
+		purchase_button.MouseButton1Up:Connect(function()
+			purchase_event:FireServer(item)
+		end)
+	end
+end
