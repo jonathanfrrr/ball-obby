@@ -1,0 +1,27 @@
+local plr = game.Players.LocalPlayer
+local plrGui = plr:WaitForChild("PlayerGui")
+
+local hasColors = plr:WaitForChild("HasColors")
+local buttonFolder = game.ReplicatedStorage:WaitForChild("ColorButtons")
+local buttonFolderGUI = plrGui:WaitForChild("ScreenGui"):WaitForChild("BallColor"):WaitForChild("Background"):WaitForChild("Frame"):WaitForChild("ScrollingFrame"):WaitForChild("Colors")
+
+for _, color in pairs(hasColors:GetChildren()) do
+	if color.Value then
+		for _, hasVALUE in pairs(buttonFolder:GetDescendants()) do
+			if hasVALUE.Name == "Value" and hasVALUE.Value == color.Name then
+				local button = hasVALUE.Parent
+				button:Clone()
+				button.Parent = buttonFolderGUI
+			end
+		end
+	end
+	color.Changed:Connect(function()
+		for _, hasVALUE in pairs(buttonFolder:GetDescendants()) do
+			if hasVALUE.Name == "Value" and hasVALUE.Value == color.Name then
+				local button = hasVALUE.Parent
+				button:Clone()
+				button.Parent = buttonFolderGUI
+			end
+		end
+	end)
+end
