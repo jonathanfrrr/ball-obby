@@ -1,0 +1,120 @@
+local part_folder = workspace.BallParts
+local players = game:GetService("Players")
+local colorChange_event = game.ReplicatedStorage.Events.ColorChange
+
+colorChange_event.OnServerEvent:Connect(function(plr, colorVAL, decalVAL)
+	local equippedColor = plr.BallFolder.EquippedColor
+	local equippedDecal = plr.BallFolder.EquippedDecal
+	
+	equippedColor.Value = colorVAL
+	equippedDecal.Value = decalVAL
+end)
+
+local db = false
+
+for _, part in pairs(part_folder:GetChildren()) do
+	if part.Name == "Equip" then
+		part.Touched:Connect(function(hit)
+			if hit.Parent:FindFirstChild("Humanoid") then
+				if db then return end
+				db = true
+				
+				local character = hit.Parent
+				local player = players:GetPlayerFromCharacter(character)
+				local equipDB = player.BallFolder.EquipDB
+				local equippedColor = player.BallFolder.EquippedColor
+				local equippedDecal = player.BallFolder.EquippedDecal
+
+				if character.HumanoidRootPart:FindFirstChild("MaBoule") or character.HumanoidRootPart:FindFirstChild("BouleMagique") then return end
+				if equipDB.Value then return end
+				equipDB.Value = true
+				
+				function ball()
+					local ancienneBoule = player:FindFirstChild("MaBoule")
+					if ancienneBoule then
+						if ancienneBoule.Value and ancienneBoule.Value.Parent then
+							ancienneBoule.Value:Destroy()
+						end
+						ancienneBoule:Destroy()
+					end
+
+					task.wait(.1) 
+
+					local boule = Instance.new("Part")
+					local PhysicsService = game:GetService("PhysicsService")
+					local props = PhysicalProperties.new(4.5, 0.3, 0.5) 
+					boule.Name = "BouleMagique"
+					boule.Shape = Enum.PartType.Ball
+					boule.Size = Vector3.new(6, 6, 6)
+					boule.Material = Enum.Material.SmoothPlastic
+					boule.Position = character.HumanoidRootPart.Position + Vector3.new(3, 0, 0)
+					boule.Anchored = false
+					boule.CanCollide = true
+					boule.BrickColor = BrickColor.new("White")
+					boule.CustomPhysicalProperties = props
+					boule.Parent = character.HumanoidRootPart
+					PhysicsService:SetPartCollisionGroup(boule, "GhostPart")
+					
+					local faceDecal = Instance.new("Decal", boule)
+					faceDecal.Name = "FaceDecal"
+
+					local attBoule = Instance.new("Attachment", boule)
+					local attJoueur = Instance.new("Attachment", character.HumanoidRootPart)
+
+					local corde = Instance.new("RopeConstraint")
+					corde.Name = "Rope"
+					corde.Attachment0 = attBoule
+					corde.Attachment1 = attJoueur
+					corde.Length = 10
+					corde.Visible = true
+					corde.Parent = boule
+					corde.Color = BrickColor.new(Color3.new(255,255,255))
+					corde.Thickness = 0.3
+
+
+					local bouleSauvegarde = Instance.new("ObjectValue")
+					bouleSauvegarde.Name = "MaBoule"
+					bouleSauvegarde.Value = boule
+					bouleSauvegarde.Parent = player
+					
+					
+					
+					if equippedDecal.Value ~= "nil" then
+						faceDecal.Texture = equippedDecal.Value
+					end
+					if equippedColor.Value ~= nil then
+						boule.Color = equippedColor.Value
+						corde.Color = BrickColor.new(equippedColor.Value)
+					end
+				end
+				ball()
+			end
+		end)
+	elseif part.Name == "UnEquip" then
+		part.Touched:Connect(function(hit)
+			if hit.Parent:FindFirstChild("Humanoid") then
+				local character = hit.Parent
+				local player = players:GetPlayerFromCharacter(character)
+				local equipDB = player.BallFolder.EquipDB
+
+				for _, ball in pairs(character.HumanoidRootPart:GetChildren()) do
+					if ball.Name == "MaBoule" or ball.Name == "BouleMagique" then 
+						ball:Destroy()
+						equipDB.Value = false
+					end
+				end
+			end
+		end)
+	end
+end
+
+
+coroutine.resume(coroutine.create(function()
+	while true do
+		task.wait()
+		if db then
+			task.wait(.1)
+			db = false
+		end
+	end
+end))
