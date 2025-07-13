@@ -1,0 +1,53 @@
+local colorChange_event = game.ReplicatedStorage:WaitForChild("Events"):WaitForChild("ColorChange")
+local plr = game.Players.LocalPlayer
+local hasColors = plr:WaitForChild("HasColors")
+
+local ts = game:GetService("TweenService")
+local playerGui = plr:WaitForChild("PlayerGui")
+local button_folder = playerGui:WaitForChild("ScreenGui"):WaitForChild("BallColor"):WaitForChild("Background"):WaitForChild("Frame"):WaitForChild("ScrollingFrame"):WaitForChild("Colors")
+local ButtonColor = playerGui:WaitForChild('ScreenGui'):WaitForChild('BallColor'):WaitForChild('ColorButton')
+local Background = playerGui:WaitForChild('ScreenGui'):WaitForChild("BallColor"):WaitForChild('Background')
+local close_button = Background:WaitForChild("CloseButton")
+
+local IsOpen = UDim2.new(0.187, 0,0.14, 0)
+local IsNotOpen = UDim2.new(0.187, 0,1, 0)
+local open = false
+Background.Visible = true
+Background.Position = IsNotOpen
+
+local tweenTime = .4
+local open_tween = ts:Create(Background, TweenInfo.new(tweenTime, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = IsOpen})
+local close_tween = ts:Create(Background, TweenInfo.new(tweenTime, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = IsNotOpen})
+
+Background.Position = IsNotOpen
+
+ButtonColor.MouseButton1Up:Connect(function()
+	if open then
+		open = false
+		close_tween:Play()
+	else
+		open = true
+		open_tween:Play()
+	end
+end)
+close_button.MouseButton1Up:Connect(function()
+	open = false
+	close_tween:Play()
+end)
+
+
+
+function refresh()
+	for _, button in pairs(button_folder:GetChildren()) do
+		if button:IsA("ImageButton") then
+			button.MouseButton1Up:Connect(function()
+				local colorVAL = button.Color
+				local decalVAL = button.Decal
+				colorChange_event:FireServer(colorVAL.Value, decalVAL.Value)
+			end)
+		end
+	end
+end
+refresh()
+
+button_folder.ChildAdded:Connect(refresh)
