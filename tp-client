@@ -1,0 +1,29 @@
+local plr = game.Players.LocalPlayer
+local plrGui = plr:WaitForChild("PlayerGui")
+local teleport_event = game.ReplicatedStorage:WaitForChild("Events"):WaitForChild("Teleport")
+
+local start = plrGui:WaitForChild("ScreenGui"):WaitForChild("Checkpoint"):WaitForChild("Start")
+local currentCheckpoint = plrGui:WaitForChild("ScreenGui"):WaitForChild("Checkpoint"):WaitForChild("CurrentCheckpoint")
+
+local dbActive = false
+
+start.MouseButton1Up:Connect(function()
+	if dbActive then return end
+	teleport_event:FireServer("Start")
+	dbActive = true
+end)
+currentCheckpoint.MouseButton1Up:Connect(function()
+	if dbActive then return end
+	teleport_event:FireServer("CurrentCheckpoint")
+	dbActive = true
+end)
+
+coroutine.resume(coroutine.create(function()
+	while true do
+		task.wait()
+		if dbActive then
+			task.wait(.5)
+			dbActive = false
+		end
+	end
+end))
